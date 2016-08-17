@@ -1,2 +1,5 @@
+future
+urllib3
+certifi
 requests
 python-telegram-bot

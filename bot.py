@@ -1,6 +1,7 @@
 import json
 import logging
 
+from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler
 
 from octoprint import OctoPrint
@@ -21,24 +22,29 @@ def start(bot, update):
     ]
 
     for printer in printers:
-        octo = OctoPrint(printer['api_url'], printer['api_key'])
-        state = octo.connection['current']['state']
-        messages.append("{0} - {1}".format(printer['name'], state))
+        try:
+            octo = OctoPrint(printer['api_url'], printer['api_key'])
+            state = octo.connection['current']['state']
+            messages.append("*{0}* - {1}".format(printer['name'], state))
+        except:
+            pass
 
     for msg in messages:
-        bot.sendMessage(update.message.chat_id, msg)
+        bot.sendMessage(update.message.chat_id, msg,
+                        parse_mode=ParseMode.MARKDOWN)
 
 
 def about(bot, update):
     messages = [
         "Hi! I'm the HackLab Toronto 3D Printers Bot!",
         "I was created by @MylesB.",
-        "You can see my source code on GitHub: "
-        "https://github.com/myles/hacklab-octoprint-telegram-bot"
+        "You can see my source code on [GitHub]("
+        "https://github.com/myles/hacklab-octoprint-telegram-bot)"
     ]
 
     for msg in messages:
-        bot.sendMessage(update.message.chat_id, msg)
+        bot.sendMessage(update.message.chat_id, msg,
+                        parse_mode=ParseMode.MARKDOWN)
 
 
 def main():
