@@ -29,6 +29,18 @@ def start(bot, update):
         bot.sendMessage(update.message.chat_id, msg)
 
 
+def about(bot, update):
+    messages = [
+        "Hi! I'm the HackLab Toronto 3D Printers Bot!",
+        "I was created by @MylesB.",
+        "You can see my source code on GitHub: "
+        "https://github.com/myles/hacklab-octoprint-telegram-bot"
+    ]
+
+    for msg in messages:
+        bot.sendMessage(update.message.chat_id, msg)
+
+
 def main():
     with open('config.json', 'r') as f:
         config = json.loads(f.read())
@@ -36,7 +48,7 @@ def main():
     updater = Updater(config['telegram_api_key'])
 
     updater.dispatcher.add_handler(CommandHandler('start', start))
-    updater.dispatcher.add_handler(CommandHandler('hello', start))
+    updater.dispatcher.add_handler(CommandHandler('about', about))
 
     updater.start_polling()
     updater.idle()

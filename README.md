@@ -5,6 +5,11 @@ This is the source code for [HackLab.TO](https://hacklab.to/)'s Octopi Telegram 
 ## Requirments
 
 * Python 2.7
-* requests
-* telegram
-* urllib3
+
+## Icon
+
+The 3D Printer icon was made by [Gonzalo Zaragoza](https://thenounproject.com/term/3d-printer/76478).
+
+## TODOs
+
+- [ ] I would like the icon to be printing the HackLab.TO Logo.
