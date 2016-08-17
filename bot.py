@@ -1,4 +1,3 @@
-import sys
 import json
 import logging
 
@@ -6,7 +5,6 @@ from telegram.ext import Updater, CommandHandler
 
 from octoprint import OctoPrint
 
-sys.path.append('./future-0.15.2/src/')
 
 logging.basicConfig(filename='bot.log', format='%(asctime)s %(message)s',
                     level=logging.DEBUG)
