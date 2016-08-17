@@ -1,4 +1,6 @@
 config.json
+certifi/
+future-package/
 requests/
 telegram/
 urllib3/
