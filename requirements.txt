@@ -2,4 +2,5 @@ future
 urllib3
 certifi
 requests
+humanize
 python-telegram-bot

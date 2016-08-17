@@ -14,8 +14,8 @@ class OctoPrint(object):
         """
         An internal method for doing the HTTP GET request.
         """
-        req = requests.get('{0}/{1}?apikey={2}'.format(api_url, endpoint,
-                                                       api_key))
+        req = requests.get('{0}/{1}?apikey={2}'.format(self.api_url, endpoint,
+                                                       self.api_key))
         return req
 
     def connection(self):
@@ -45,4 +45,4 @@ class OctoPrint(object):
         Retrieve information about the current job (if there is one).
         """
         req = self.get('job')
-        return resp.json()
+        return req.json()

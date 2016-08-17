@@ -1,5 +1,8 @@
 import json
 import logging
+import datetime
+
+import humanize
 
 from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler
@@ -40,11 +43,42 @@ def about(bot, update):
         "Hi! I'm the HackLab Toronto 3D Printers Bot!",
         "I was created by @MylesB.",
         "You can see my source code on [GitHub]("
-        "https://github.com/myles/hacklab-octoprint-telegram-bot)"
+        "https://github.com/myles/hacklab-octoprint-telegram-bot)."
     ]
 
     for msg in messages:
         bot.sendMessage(update.message.chat_id, msg,
+                        parse_mode=ParseMode.MARKDOWN)
+
+
+def status(bot, update):
+    request = update.message.text.strip('/status ')
+
+    with open('config.json', 'r') as f:
+        printers = json.loads(f.read()).get('printers', [])
+
+    printer = next((i for i in printers if i["name"] == request), None)
+
+    if not printer:
+        return bot.sendMessage(update.message.chat_id,
+                               "That printer doesn't exist.")
+
+    octo = OctoPrint(printer['api_url'], printer['api_key'])
+    job = octo.job()
+
+    messages = [
+        "The printers current state is *{state}*."
+    ]
+
+    if job['state'] == 'Printing':
+        messages.append('Currently printing the file *{job.file}*.')
+
+        ext_print_time = job['job']['estimatedPrintTime']
+        time_left = humanize.naturaltime(datetime.timedelta(seconds=ext_print_time))
+        messages.append('Print will be completed in {0}'.format(time_left))
+
+    for msg in messages:
+        bot.sendMessage(update.message.chat_id, msg.format(**job),
                         parse_mode=ParseMode.MARKDOWN)
 
 
@@ -56,6 +90,7 @@ def main():
 
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('about', about))
+    updater.dispatcher.add_handler(CommandHandler('status', status))
 
     updater.start_polling()
     updater.idle()
