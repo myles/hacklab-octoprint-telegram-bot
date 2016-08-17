@@ -24,8 +24,9 @@ def start(bot, update):
     for printer in printers:
         try:
             octo = OctoPrint(printer['api_url'], printer['api_key'])
-            state = octo.connection['current']['state']
-            messages.append("*{0}* - {1}".format(printer['name'], state))
+            conn = octo.connection()
+            messages.append("*{0}* - {1}".format(printer['name'],
+                                                 conn['current']['state']))
         except:
             pass
 
