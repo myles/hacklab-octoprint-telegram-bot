@@ -67,7 +67,8 @@ class HackLabTOPrintersBot(object):
         for msg in messages:
             bot.sendMessage(update.message.chat_id, msg,
                             parse_mode=ParseMode.MARKDOWN,
-                            reply_markup=self.keyboard)
+                            reply_markup=self.keyboard,
+                            disable_web_page_preview=True)
 
     def status(self, bot, update):
         request = update.message.text.strip('/status ')
