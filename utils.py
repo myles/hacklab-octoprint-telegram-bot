@@ -10,7 +10,7 @@ def seconds_to_human(seconds):
 
     :param seconds: Seconds to convert
     :type seconds: int
-    
+
     :rtype: str
     :return: Human readable string
     """

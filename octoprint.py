@@ -1,5 +1,6 @@
 import requests
 
+
 class OctoPrint(object):
 
     def __init__(self, api_url, api_key):
