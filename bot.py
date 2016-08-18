@@ -71,7 +71,7 @@ def status(bot, update):
     ]
 
     if job['state'] == 'Printing':
-        messages.append('Currently printing the file *{job[file]}*.')
+        messages.append('Currently printing the file *{job[file][name]}*.')
 
         ext_print_time = job['job']['estimatedPrintTime']
         time_left = humanize.naturaltime(datetime.timedelta(seconds=ext_print_time))
