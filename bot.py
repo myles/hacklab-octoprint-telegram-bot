@@ -4,7 +4,7 @@ import datetime
 
 import humanize
 
-from telegram import ParseMode
+from telegram import ParseMode, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler
 
 from octoprint import OctoPrint
@@ -71,7 +71,7 @@ def status(bot, update):
     ]
 
     if job['state'] == 'Printing':
-        messages.append('Currently printing the file *{job.file}*.')
+        messages.append('Currently printing the file *{job[file]}*.')
 
         ext_print_time = job['job']['estimatedPrintTime']
         time_left = humanize.naturaltime(datetime.timedelta(seconds=ext_print_time))
