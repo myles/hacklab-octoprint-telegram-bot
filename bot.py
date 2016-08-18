@@ -4,6 +4,7 @@ import logging
 from telegram import ParseMode, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler
 
+from utils import seconds_to_human
 from octoprint import OctoPrint
 
 
@@ -89,9 +90,11 @@ class HackLabTOPrintersBot(object):
         ]
 
         if job['state'] == 'Printing':
+            job['human_est_time'] = seconds_to_human(job['estimatedPrintTime'])
+
             messages.append('Currently printing the file *{job[file][name]}*.')
-            messages.append("Print will be completed in "
-                            "{job[estimatedPrintTime]} seconds.")
+            messages.append("Print will be completed in {job[human_est_time]} "
+                            "seconds.")
 
         for msg in messages:
             bot.sendMessage(update.message.chat_id, msg.format(**job),
