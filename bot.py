@@ -54,6 +54,9 @@ def about(bot, update):
 def status(bot, update):
     request = update.message.text.strip('/status ')
 
+    if request == '':
+        return start(bot, update)
+
     with open('config.json', 'r') as f:
         printers = json.loads(f.read()).get('printers', [])
 
