@@ -11,7 +11,7 @@ def seconds_to_human(seconds):
     :param seconds: Seconds to convert
     :type seconds: int
     
-    :rtype: int
+    :rtype: str
     :return: Human readable string
     """
     interval_dict = OrderedDict([("years", 365*86400),  # 1 year
