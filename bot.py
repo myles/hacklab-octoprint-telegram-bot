@@ -1,8 +1,5 @@
 import json
 import logging
-import datetime
-
-import humanize
 
 from telegram import ParseMode, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler
@@ -22,21 +19,22 @@ class HackLabTOPrintersBot(object):
 
         self.telegram_api_key = config['telegram_api_key']
         self.printers = config['printers']
-        
+
         kb_status = []
-
         for printer in self.printers:
-            kb_status.append(KeyboardButton('/status {name}'.format(**printer)))
+            kb_status.append(KeyboardButton('/status '
+                                            '{name}'.format(**printer)))
 
-        self.keyboard = [kb_status, [KeyboardButton('/status'),
-                                     KeyboardButton('/about')]]
+        self.keyboard = ReplyKeyboardMarkup([kb_status,
+                                            [KeyboardButton('/status'),
+                                             KeyboardButton('/about')]])
 
-    def get_printer(name):
+    def get_printer(self, name):
         return next((i for i in self.printers if i["name"] == name), None)
 
     def start(self, bot, update):
         len_printers = len(self.printers)
-        
+
         messages = [
             "Hi! I'm the 3D Printer Bot for HackLab Toronto.",
             "I'm aware of {0} printers at the HackLab.".format(len_printers),
@@ -74,9 +72,9 @@ class HackLabTOPrintersBot(object):
         request = update.message.text.strip('/status ')
 
         if request == '':
-            return start(bot, update)
+            return self.start(bot, update)
 
-        printer = get_printer(request)
+        printer = self.get_printer(request)
 
         if not printer:
             return bot.sendMessage(update.message.chat_id,
