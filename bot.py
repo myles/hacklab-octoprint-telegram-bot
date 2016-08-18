@@ -96,7 +96,7 @@ class HackLabTOPrintersBot(object):
             bot.sendMessage(update.message.chat_id, msg.format(**job),
                             parse_mode=ParseMode.MARKDOWN)
 
-    def main():
+    def main(self):
         updater = Updater(self.telegram_api_key)
 
         updater.dispatcher.add_handler(CommandHandler('start', self.start))
