@@ -54,7 +54,8 @@ class HackLabTOPrintersBot(object):
 
         for msg in messages:
             bot.sendMessage(update.message.chat_id, msg,
-                            parse_mode=ParseMode.MARKDOWN)
+                            parse_mode=ParseMode.MARKDOWN,
+                            reply_markup=self.keyboard)
 
     def about(self, bot, update):
         messages = [
@@ -66,7 +67,8 @@ class HackLabTOPrintersBot(object):
 
         for msg in messages:
             bot.sendMessage(update.message.chat_id, msg,
-                            parse_mode=ParseMode.MARKDOWN)
+                            parse_mode=ParseMode.MARKDOWN,
+                            reply_markup=self.keyboard)
 
     def status(self, bot, update):
         request = update.message.text.strip('/status ')
@@ -78,7 +80,8 @@ class HackLabTOPrintersBot(object):
 
         if not printer:
             return bot.sendMessage(update.message.chat_id,
-                                   "That printer doesn't exist.")
+                                   "That printer doesn't exist.",
+                                   reply_markup=self.keyboard)
 
         octo = OctoPrint(printer['api_url'], printer['api_key'])
         job = octo.job()
@@ -94,7 +97,8 @@ class HackLabTOPrintersBot(object):
 
         for msg in messages:
             bot.sendMessage(update.message.chat_id, msg.format(**job),
-                            parse_mode=ParseMode.MARKDOWN)
+                            parse_mode=ParseMode.MARKDOWN,
+                            reply_markup=self.keyboard)
 
     def main(self):
         updater = Updater(self.telegram_api_key)
