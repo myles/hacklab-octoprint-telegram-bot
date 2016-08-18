@@ -14,90 +14,99 @@ logging.basicConfig(filename='bot.log', format='%(asctime)s %(message)s',
                     level=logging.DEBUG)
 
 
-def start(bot, update):
-    with open('config.json', 'r') as f:
-        printers = json.loads(f.read()).get('printers', [])
+class HackLabTOPrintersBot(object):
 
-    messages = [
-        "Hi! I'm the 3D Printer Bot for HackLab Toronto.",
-        "I'm aware of {0} printers at the HackLab.".format(len(printers)),
-        "Below is their current state:"
-    ]
+    def __init__(self):
+        with open('config.json', 'r') as config_file:
+            config = json.loads(config_file.read())
 
-    for printer in printers:
-        try:
-            octo = OctoPrint(printer['api_url'], printer['api_key'])
-            conn = octo.connection()
-            messages.append("*{0}* - {1}".format(printer['name'],
-                                                 conn['current']['state']))
-        except:
-            pass
+        self.telegram_api_key = config['telegram_api_key']
+        self.printers = config['printers']
+        
+        kb_status = []
 
-    for msg in messages:
-        bot.sendMessage(update.message.chat_id, msg,
-                        parse_mode=ParseMode.MARKDOWN)
+        for printer in self.printers:
+            kb_status.append(KeyboardButton('/status {name}'.format(**printer)))
 
+        self.keyboard = [kb_status, [KeyboardButton('/status'),
+                                     KeyboardButton('/about')]]
 
-def about(bot, update):
-    messages = [
-        "Hi! I'm the HackLab Toronto 3D Printers Bot!",
-        "I was created by @MylesB.",
-        "You can see my source code on [GitHub]("
-        "https://github.com/myles/hacklab-octoprint-telegram-bot)."
-    ]
+    def get_printer(name):
+        return next((i for i in self.printers if i["name"] == name), None)
 
-    for msg in messages:
-        bot.sendMessage(update.message.chat_id, msg,
-                        parse_mode=ParseMode.MARKDOWN)
+    def start(self, bot, update):
+        len_printers = len(self.printers)
+        
+        messages = [
+            "Hi! I'm the 3D Printer Bot for HackLab Toronto.",
+            "I'm aware of {0} printers at the HackLab.".format(len_printers),
+            "Below is their current state:"
+        ]
 
+        for printer in self.printers:
+            try:
+                octo = OctoPrint(printer['api_url'], printer['api_key'])
+                conn = octo.connection()
+                messages.append("*{0}* - {1}".format(printer['name'],
+                                                     conn['current']['state']))
+            except:
+                messages.append("*{0}* - Offline".format(printer['name']))
 
-def status(bot, update):
-    request = update.message.text.strip('/status ')
+        for msg in messages:
+            bot.sendMessage(update.message.chat_id, msg,
+                            parse_mode=ParseMode.MARKDOWN)
 
-    if request == '':
-        return start(bot, update)
+    def about(self, bot, update):
+        messages = [
+            "Hi! I'm the HackLab Toronto 3D Printers Bot!",
+            "I was created by @MylesB.",
+            "You can see my source code on [GitHub]("
+            "https://github.com/myles/hacklab-octoprint-telegram-bot)."
+        ]
 
-    with open('config.json', 'r') as f:
-        printers = json.loads(f.read()).get('printers', [])
+        for msg in messages:
+            bot.sendMessage(update.message.chat_id, msg,
+                            parse_mode=ParseMode.MARKDOWN)
 
-    printer = next((i for i in printers if i["name"] == request), None)
+    def status(self, bot, update):
+        request = update.message.text.strip('/status ')
 
-    if not printer:
-        return bot.sendMessage(update.message.chat_id,
-                               "That printer doesn't exist.")
+        if request == '':
+            return start(bot, update)
 
-    octo = OctoPrint(printer['api_url'], printer['api_key'])
-    job = octo.job()
+        printer = get_printer(request)
 
-    messages = [
-        "The printers current state is *{state}*."
-    ]
+        if not printer:
+            return bot.sendMessage(update.message.chat_id,
+                                   "That printer doesn't exist.")
 
-    if job['state'] == 'Printing':
-        messages.append('Currently printing the file *{job[file][name]}*.')
+        octo = OctoPrint(printer['api_url'], printer['api_key'])
+        job = octo.job()
 
-        ext_print_time = job['job']['estimatedPrintTime']
-        time_left = humanize.naturaltime(datetime.timedelta(seconds=ext_print_time))
-        messages.append('Print will be completed in {0}'.format(time_left))
+        messages = [
+            "The printers current state is *{state}*."
+        ]
 
-    for msg in messages:
-        bot.sendMessage(update.message.chat_id, msg.format(**job),
-                        parse_mode=ParseMode.MARKDOWN)
+        if job['state'] == 'Printing':
+            messages.append('Currently printing the file *{job[file][name]}*.')
+            messages.append("Print will be completed in "
+                            "{job[estimatedPrintTime]} seconds.")
 
+        for msg in messages:
+            bot.sendMessage(update.message.chat_id, msg.format(**job),
+                            parse_mode=ParseMode.MARKDOWN)
 
-def main():
-    with open('config.json', 'r') as f:
-        config = json.loads(f.read())
+    def main():
+        updater = Updater(self.telegram_api_key)
 
-    updater = Updater(config['telegram_api_key'])
+        updater.dispatcher.add_handler(CommandHandler('start', self.start))
+        updater.dispatcher.add_handler(CommandHandler('about', self.about))
+        updater.dispatcher.add_handler(CommandHandler('status', self.status))
 
-    updater.dispatcher.add_handler(CommandHandler('start', start))
-    updater.dispatcher.add_handler(CommandHandler('about', about))
-    updater.dispatcher.add_handler(CommandHandler('status', status))
-
-    updater.start_polling()
-    updater.idle()
+        updater.start_polling()
+        updater.idle()
 
 
 if __name__ == "__main__":
-    main()
+    bot = HackLabTOPrintersBot()
+    bot.main()
