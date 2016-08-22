@@ -91,7 +91,9 @@ class HackLabTOPrintersBot(object):
         ]
 
         if job['state'] == 'Printing':
-            job['human_est_time'] = seconds_to_human(job['estimatedPrintTime'])
+            estimated_print_time = job['job']['estimatedPrintTime']
+            
+            job['human_est_time'] = seconds_to_human(estimated_print_time)
 
             messages.append('Currently printing the file *{job[file][name]}*.')
             messages.append("Print will be completed in {job[human_est_time]} "
