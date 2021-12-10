@@ -1,3 +1,7 @@
+# Status: Archived
+
+This repository has been archived and is no longer maintained.
+
 # HackLab OctoPrint Telegram Bot
 
 This is the source code for [HackLab.TO](https://hacklab.to/)'s OctoPrint Telegram Bot. 
